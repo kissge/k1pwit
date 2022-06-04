@@ -1,0 +1,12 @@
+#!/bin/bash
+
+export WINDOW_WIDTH=800
+export WINDOW_HEIGHT=400
+export OP_SESSION_FILE="$PWD"/.k1pwit-session
+export HISTORY_FILE="$PWD"/.k1pwit-history
+
+for config in .k1pwitrc ~/.k1pwitrc ~/.config/k1pwit/k1pwitrc; do
+    if [ -f "$config" ]; then
+        . "$config"
+    fi
+done

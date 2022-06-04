@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+
+function die() {
+    echo
+    read -rp 'Hit Enter to exit'
+    exit 1
+}
+
+if ! which op >/dev/null 2>&1; then
+    cat <<EOF
+Error: op (1Password CLI) is not installed, or at least not found.
+
+1. If you haven't installed op yet, please install it first.
+   https://1password.com/downloads/command-line/
+
+2. If you have installed op, then PATH is not set correctly.
+   If you type \`op' in your normal terminal window and it works OK, then try this:
+
+   \$ echo "PATH=\$PATH" >> ~/.k1pwitrc
+
+   Hints:
+      1. Current PATH is:
+            $PATH
+      2. You have op here:
+EOF
+
+    echo -n "            "
+    # GNU
+    find / -name op -type f -executable -print -quit 2>/dev/null ||
+        # FreeBSD
+        find / -name op -type f -perm +111 -print -quit 2>/dev/null
+
+    die
+fi
+
+if op --version | grep -q '^1\.'; then
+    echo "Error: op (1Password CLI) version 1 is not supported. Please upgrade to version 2."
+    die
+fi
+
+if op --version | grep -vq '^2\.'; then
+    echo "Warning: op (1Password CLI) version $(op --version) is not supported. Hope it works..."
+fi
+
+if ! which jq >/dev/null 2>&1; then
+    echo "Error: jq (JSON parser) is not installed, or at least not found."
+    die
+fi
+
+if ! which fzf >/dev/null 2>&1; then
+    echo "Error: fzf (fuzzy finder) is not installed, or at least not found. Please install it first."
+    echo "TODO: maybe we can provide some fallbacks here; PR is welcome."
+    die
+fi

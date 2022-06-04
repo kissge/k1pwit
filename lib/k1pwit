@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+cd "$(dirname -- "${BASH_SOURCE[0]}")/.."
+. ./lib/load-config
+
+cat <<EOS
+
+ __     ____                   __ __
+|  |--.|_   | .-----.--.--.--.|__|  |_
+|    <  _|  |_|  _  |  |  |  ||  |   _|
+|__|__||______|   __|________||__|____|
+              |__|
+                            k1pwit v1.0.0
+
+(C) 2022 Yusuke Kido (https://github.com/kissge/k1pwit)
+
+EOS
+
+. ./lib/check-sanity
+
+if password=$(bash ./lib/select-password); then
+    osascript <<EOS
+    tell application "iTerm2"
+        repeat with _window in windows
+            repeat with _tab in tabs of _window
+                repeat with _session in sessions of _tab
+                    if unique id of _session is "$1" then
+                        tell _session to write text "$password"
+                    end if
+                end repeat
+            end repeat
+        end repeat
+    end tell
+EOS
+fi

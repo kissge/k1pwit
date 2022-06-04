@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+cd "$(dirname -- "${BASH_SOURCE[0]}")"
+. ./lib/load-config
+
+osascript <<EOS >/dev/null 2>&1
+tell application "iTerm2"
+    set _bounds to bounds of current window as list
+    set x to (item 1 of _bounds + item 3 of _bounds) / 2
+    set y to (item 2 of _bounds + item 4 of _bounds) / 2
+    set sessionID to unique id of current session of current window
+    set popup to create window with default profile command "bash '$PWD/lib/k1pwit' " & sessionID
+    set bounds of popup to {x - $WINDOW_WIDTH / 2, y - $WINDOW_HEIGHT / 2, x + $WINDOW_WIDTH / 2, y + $WINDOW_HEIGHT / 2}
+end tell
+EOS
